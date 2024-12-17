@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" href="styles [CSS]/styles.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User View Cart Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+            margin: 10px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .cart-item, .recommendation {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            align-items: center;
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+        .recommendation-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .recommendation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .recommendation img {
+            width: 150px;
+            margin-bottom: 10px;
+        }
+        .recommendation-button {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+        .pay-now-button {
+            background-color: green;
+            color: white;
+            border: none;
+        }
+        .remove-button {
+            background-color: red;
+            color: white;
+            border: none;
+        }
+        .add-to-cart-button {
+            background-color:#207DDF ;
+            color: white; 
+        }
+        .pay-all-button{
+            background-color: green;
+            color: white;
+            border: none;
+        }
+    </style>
+
+
+<?php  
+
+
+define('DB_SERVER', 'localhost');
+define('DB_USERNAME', 'root');
+define('DB_PASSWORD', '');
+define('DB_NAME', 'pixelpulse');
+
+//database connect
+$link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
+
+if($link === false)
+{
+    die("ERROR: Could not connect. " . mysqli_connect_error());
+
+}
+
+$sql = "SELECT * FROM item";
+
+$result = $link->query($sql);
+$games = $result->fetch_all();
+
+?>
+</head>
+
+<body>
+	<ul class="navbar">
+
+	<li><a href="#">Home</a></li>
+	<li><a href="#">Games</a></li>
+	<li><a href="#">About us</a></li>
+	<li><a href="#">Support</a></li>
+	<li><a href="#">FAQ</a></li>
+	<li><a href="#">Feedback</a></li>
+	<li id="logo"><a href="#"> <img src="resources(src)/images/profile.png" width="35px" height="35px"></a></li>
+		<br><p class="test1"><strong><a href="#">Login</a> / <a href="#">Register</a></strong></p>
+	</ul>
+		
+    
+
+    <section>
+        <h2>My Cart</h2>
+        <div id="cart">
+            <!-- Cart items will be added here -->
+        </div>
+		<div class="pay-all-button-container">
+			<button class="pay-all-button" onclick="payAllItems()">Pay All</button>
+		</div>
+		
+    </section>
+
+    <section>
+        <h2></h2>
+        <!-- Display 10 games in 4 rows with 3 games in each row -->
+        <div id ="warpper">
+
+       </div><!--wrapper-->
+       
+    </section>
+
+    <script>
+        function addToCart(gameName, gamePrice, gameImage) {
+            // Create a new cart item
+            const cartItem = document.createElement('div');
+            cartItem.classList.add('cart-item');
+            cartItem.innerHTML = `
+                <img src="${gameImage}" alt="Game Image" width="50">
+                <span>${gameName}</span>
+                <span>${gamePrice}</span>
+                <div>
+                    <button class="pay-now-button" onclick="navigateToPaymentDetails()"><a href>Pay Now</a></button>
+                     <button class="remove-button" onclick="removeItem(this)">Remove</button>
+					
+                </div>
+            `;
+
+            // Add the cart item to the cart section
+            const cartSection = document.getElementById('cart');
+            cartSection.appendChild(cartItem);
+
+                  
+            }
+
+        function removeItem(buttonElement) {
+            buttonElement.closest('.cart-item').remove();
+        }
+		
+		  function navigateToPaymentDetails() {
+            window.location.href = 'payment.html';
+        }
+		
+		function payAllItems() {
+			window.location.href = '../Register_Dinuka/Payment.html';
+		}
+        
+        var games = <?php echo json_encode($games); ?>;
+        var gamesLen = games.length;
+        function createHTML(list, length)
+        {
+
+            var rootElement = document.getElementById("warpper");
+            var j;
+            var i;
+            var lowerLimit = 0;
+            var upperLimit = 4;
+            var addition = 0;
+            for(i = 0; i < Math.ceil(length/4); i++)
+                {
+                    const div = document.createElement('div');
+                    div.setAttribute("class","recommendation-row");
+                    rootElement.append(div);
+
+                    lowerLimit =+ addition;
+                    for(j = lowerLimit; j < upperLimit; j++)
+                    {
+                        var game = list[j];
+                        const item = document.createElement('div');
+                        item.setAttribute("class", "recommendation");
+                        div.append(item);
+
+                        const image = document.createElement('img');
+                        const attributes =
+                        {
+                            src: game[1],
+                            width: '200',
+                        };
+
+                        Object.keys(attributes).forEach(attr => {
+                        image.setAttribute(attr, attributes[attr]);
+                        });
+
+                        item.append(image);
+
+                        const span = document.createElement('span');
+
+                        span.textContent = game[2];
+
+                        item.append(span);
+
+                        const priceSpan = document.createElement('span');
+                        priceSpan.textContent = game[3];
+                        item.append(priceSpan);
+
+                        const button = document.createElement('button');
+
+                        const btnAtr =
+                        {
+                                class: "add-to-cart-button",
+                                onclick: `addToCart('${game[2]}', '${game[3]}', '${game[1]}')`,
+
+
+                        };
+
+                        Object.keys(btnAtr).forEach(btnattr => {
+                        button.setAttribute(btnattr, btnAtr[btnattr]);
+                        });
+
+                        button.textContent = "Add to cart";
+                        item.append(button);
+
+
+                    }
+
+
+                upperLimit += 4;
+                addition += 4
+                }
+
+        }
+
+        createHTML(games, gamesLen);
+
+        
+    </script>
+	<footer class="footer">
+  	 <div class="container" id="container">
+  	 	<div class="row">
+  	 		<div class="footer-col">
+  	 			<h4>contact</h4>
+  	 			<ul>
+ 				  <li><a href="#">pixelpulse@gaming.com&nbsp;</a></li>
+  	 				<li><a href="#">Tel : 0112-234-55&nbsp;</a></li>
+  	 				<li><a href="#">Newyork, USA</a></li>
+  	 			</ul>
+  	 		</div>
+  	 		<div class="footer-col">
+  	 			<h4>License &amp; Terms&nbsp;</h4>
+  	 			<ul>
+ 				  <li><a href="#">Privacy policy</a></li>
+  	 				<li><a href="#">Terms of use</a></li>
+  	 			</ul>
+  	 		</div>
+  	 		<div class="footer-col">
+  	 			<h4>Company</h4>
+  	 			<ul>
+ 				  <li><a href="#">about us</a></li>
+  	 				<li><a href="#">contact us</a></li>
+  	 			</ul>
+  	 		</div>
+  	 		<div class="footer-col">
+  	 			<h4>follow us</h4>
+  	 			<div class="social-links">
+  	 				<a href="https://www.facebook.com/"><i class="fab fa-facebook-f"></i></a>
+  	 				<a href="https://twitter.com/home"><i class="fab fa-twitter"></i></a>
+  	 				<a href="https://www.instagram.com/"><i class="fab fa-instagram"></i></a>
+  	 				<a href="https://lk.linkedin.com/?original_referer=https%3A%2F%2Fwww.google.com%2F"><i class="fab fa-linkedin-in"></i></a>
+					
+  	 			</div>
+  	 		</div>
+  	 	</div>
+  	 </div>
+	 <p class="copy1">
+					<br><br>&copy; 2023 PixelPulse. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>
